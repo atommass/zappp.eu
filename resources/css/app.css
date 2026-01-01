@@ -1,3 +1,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@font-face{
+font-family: 'Croogla Medium';
+src: url('../fonts/fonnts.com-croogla_4f-medium.otf') format('opentype');
+font-weight: 400 700;
+font-style: normal;
+font-display: swap;
+}
