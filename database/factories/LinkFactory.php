@@ -19,6 +19,7 @@ class LinkFactory extends Factory
         return [
             'slug' => $this->faker->slug(),
             'target' => $this->faker->url(),
+            'expires_at' => now()->addDays(90),
         ];
     }
 }

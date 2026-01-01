@@ -24,6 +24,11 @@
                                             ({{ $link->redirects_count }} {{ $link->redirects_count === 1 ? 'redirect' : 'redirects' }})
                                         </span>
                                         <p class="text-sm text-gray-500">Target: {{ $link->target }}</p>
+                                        @if($link->expires_at)
+                                            <p class="text-sm text-gray-500">Expires: {{ $link->expires_at->diffForHumans() }} @if($link->isExpired()) (expired) @endif</p>
+                                        @else
+                                            <p class="text-sm text-gray-500">Expires: Never</p>
+                                        @endif
                                     </div>
                                     <form action="{{ route('links.destroy', $link) }}" method="POST" class="ml-2">
                                         @csrf
@@ -60,6 +65,18 @@
                                 @error('slug')
                                     <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
                                 @enderror
+                            </div>
+                            <div class="mb-4">
+                                <label for="expires_at" class="block text-gray-700 dark:text-gray-300">Expiration (optional)</label>
+                                <input type="text" id="expires_at" name="expires_at" placeholder="Select date and time" class="w-full p-2 border border-gray-300 dark:border-gray-600 dark:text-gray-800 rounded-lg" value="{{ old('expires_at') }}">
+                                <p class="text-xs text-gray-500 mt-1">Leave blank to use default 90-day expiry.</p>
+                                @error('expires_at')
+                                    <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                                @enderror
+                                <label class="inline-flex items-center mt-2">
+                                    <input type="checkbox" name="never" value="1" class="form-checkbox mr-2" {{ old('never') ? 'checked' : '' }}>
+                                    <span class="text-sm text-gray-700 dark:text-gray-300">Never expire</span>
+                                </label>
                             </div>
                             <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                                 Shorten URL

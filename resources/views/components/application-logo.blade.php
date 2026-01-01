@@ -10,7 +10,7 @@
 		color: #F2B705;
 		font-family: 'CrooglaLocal', 'Croogla Medium', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 		font-weight: 700;
-		font-size: 4rem;
+		font-size: 2.5rem;
 		line-height: 1;
 		display: block;
 		text-align: center;

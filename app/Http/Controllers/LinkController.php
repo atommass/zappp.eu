@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class LinkController extends Controller
 {
@@ -28,6 +29,8 @@ class LinkController extends Controller
         $request->validate([
             'target' => 'required|url|max:2048',
             'slug' => 'nullable|string|alpha_dash|max:255|unique:links,slug',
+            'expires_at' => 'nullable|date',
+            'never' => 'nullable|boolean',
         ], [
             'target.required' => 'Please enter a URL to shorten.',
             'target.url' => 'Please enter a valid URL.',
@@ -41,6 +44,11 @@ class LinkController extends Controller
         $link = $user->links()->create([
             'target' => $request->input('target'),
             'slug' => $request->input('slug') ?: Str::random(6),
+            'expires_at' => (
+                $request->boolean('never')
+                    ? null
+                    : ($request->filled('expires_at') ? Carbon::parse($request->input('expires_at')) : now()->addDays(90))
+            ),
         ]);
 
         return redirect()->route('dashboard')->with('status', 'Link created: ' . url($link->slug));

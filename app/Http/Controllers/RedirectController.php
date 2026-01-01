@@ -9,6 +9,10 @@ class RedirectController extends Controller
 {
     public function __invoke(Link $link)
     {
+        if ($link->isExpired()) {
+            abort(404);
+        }
+
         $link->redirects()->create();
         return redirect()->away($link->target);
     }
