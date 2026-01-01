@@ -14,6 +14,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [LinkController::class, 'index'])->name('dashboard');
     Route::post('/links/store', [LinkController::class, 'store'])->name('links.store');
     Route::delete('/links/{link}/destroy', [LinkController::class, 'destroy'])->name('links.destroy');
+    Route::get('/links/{link}/edit', [LinkController::class, 'edit'])->name('links.edit');
+    Route::patch('/links/{link}/update', [LinkController::class, 'update'])->name('links.update');
 });
 
 Route::middleware('auth')->group(function () {
@@ -24,4 +26,6 @@ Route::middleware('auth')->group(function () {
 
 require __DIR__.'/auth.php';
 
+Route::get('/{link:slug}/unlock', [RedirectController::class, 'unlockForm'])->name('links.unlock');
+Route::post('/{link:slug}/unlock', [RedirectController::class, 'unlock'])->name('links.unlock.submit');
 Route::get('/{link:slug}', [RedirectController::class, '__invoke'])->name('links.redirect');

@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Hide elements marked with x-cloak until Alpine initializes to prevent flash */
+[x-cloak] { display: none !important; }
+
 @font-face{
 font-family: 'Croogla Medium';
 src: url('../fonts/fonnts.com-croogla_4f-medium.otf') format('opentype');

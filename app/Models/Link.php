@@ -12,6 +12,10 @@ class Link extends Model
 
     protected $guarded = [];
 
+    protected $hidden = [
+        'password_hash',
+    ];
+
     protected $casts = [
         'expires_at' => 'datetime',
     ];
@@ -33,6 +37,11 @@ class Link extends Model
         }
 
         return $this->expires_at->isPast();
+    }
+
+    public function isPasswordProtected(): bool
+    {
+        return !is_null($this->password_hash);
     }
 
     public function scopeActive($query)

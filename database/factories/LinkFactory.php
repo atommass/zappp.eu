@@ -20,6 +20,7 @@ class LinkFactory extends Factory
             'slug' => $this->faker->slug(),
             'target' => $this->faker->url(),
             'expires_at' => now()->addDays(90),
+            'password_hash' => null,
         ];
     }
 }
