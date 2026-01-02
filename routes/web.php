@@ -41,6 +41,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+/* Support page */
+Route::get('support', [\App\Http\Controllers\SupportController::class, 'create'])
+    ->name('support');
+
+Route::post('support', [\App\Http\Controllers\SupportController::class, 'store'])
+    ->name('support.send');
+
 require __DIR__.'/auth.php';
 
 Route::get('/{link:slug}/unlock', [RedirectController::class, 'unlockForm'])->name('links.unlock');
