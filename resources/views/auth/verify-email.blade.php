@@ -9,6 +9,12 @@
         </div>
     @endif
 
+    @if (session('status') == 'verification-link-throttled')
+        <div class="mb-4 font-medium text-sm text-red-600 dark:text-red-400">
+            {{ __('Please wait :seconds seconds before requesting another verification email.', ['seconds' => (int) session('throttle_seconds', 0)]) }}
+        </div>
+    @endif
+
     <div class="mt-4 flex items-center justify-between">
         <form method="POST" action="{{ route('verification.send') }}">
             @csrf

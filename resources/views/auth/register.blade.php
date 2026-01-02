@@ -1,5 +1,14 @@
 <x-guest-layout>
-    <form method="POST" action="{{ route('register') }}">
+    @php
+        $registerBackoffUntil = session('register_backoff_until');
+        $registerBackoffRemaining = $registerBackoffUntil
+            ? max(0, (int) $registerBackoffUntil - now()->timestamp)
+            : 0;
+    @endphp
+
+    <form method="POST" action="{{ route('register') }}"
+        x-data="{ remaining: {{ $registerBackoffRemaining }} }"
+        x-init="if (remaining > 0) { const timer = setInterval(() => { if (remaining > 0) { remaining--; } else { clearInterval(timer); } }, 1000); }">
         @csrf
 
         <!-- Name -->
@@ -40,7 +49,14 @@
         </div>
 
         <div class="flex flex-col items-center justify-end mt-4">
-            <x-primary-button class="ms-4 mb-5 mt-3 mr-3">
+            <div x-show="remaining > 0" class="mb-3 text-sm text-red-600 dark:text-red-400" x-cloak>
+                <span x-text="'Too many attempts. Try again in ' + remaining + 's.'"></span>
+            </div>
+
+            <x-primary-button
+                class="ms-4 mb-5 mt-3 mr-3 disabled:opacity-50 disabled:cursor-not-allowed"
+                :disabled="$registerBackoffRemaining > 0"
+                x-bind:disabled="remaining > 0">
                 {{ __('Register') }}
             </x-primary-button>
             <a class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800" href="{{ route('login') }}">

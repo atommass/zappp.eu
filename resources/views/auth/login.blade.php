@@ -2,7 +2,16 @@
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
-    <form method="POST" action="{{ route('login') }}">
+    @php
+        $loginBackoffUntil = session('login_backoff_until');
+        $loginBackoffRemaining = $loginBackoffUntil
+            ? max(0, (int) $loginBackoffUntil - now()->timestamp)
+            : 0;
+    @endphp
+
+    <form method="POST" action="{{ route('login') }}"
+        x-data="{ remaining: {{ $loginBackoffRemaining }} }"
+        x-init="if (remaining > 0) { const timer = setInterval(() => { if (remaining > 0) { remaining--; } else { clearInterval(timer); } }, 1000); }">
         @csrf
 
         <!-- Email Address -->
@@ -33,7 +42,14 @@
         </div>
 
         <div class="flex flex-col items-center justify-end mt-4">
-            <x-primary-button class="ms-3 mb-5 mt-3 mr-3">
+            <div x-show="remaining > 0" class="mb-3 text-sm text-red-600 dark:text-red-400" x-cloak>
+                <span x-text="'Too many attempts. Try again in ' + remaining + 's.'"></span>
+            </div>
+
+            <x-primary-button
+                class="ms-3 mb-5 mt-3 mr-3 disabled:opacity-50 disabled:cursor-not-allowed"
+                :disabled="$loginBackoffRemaining > 0"
+                x-bind:disabled="remaining > 0">
                 {{ __('Log in') }}
             </x-primary-button>
             @if (Route::has('password.request'))
