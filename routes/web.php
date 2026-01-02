@@ -10,6 +10,8 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::view('/cookie-policy', 'legal.cookie-policy')->name('cookie.policy');
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [LinkController::class, 'index'])->name('dashboard');

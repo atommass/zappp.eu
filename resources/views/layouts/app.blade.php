@@ -16,7 +16,8 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
 
         @php($gaId = config('services.google.analytics_id'))
-        @if($gaId)
+        @php($hasAnalyticsConsent = request()->cookie('zappp_cookie_consent') === 'analytics')
+        @if($gaId && $hasAnalyticsConsent)
             <!-- Global site tag (gtag.js) - Google Analytics -->
             <script async src="https://www.googletagmanager.com/gtag/js?id={{ $gaId }}"></script>
             <script>
@@ -40,7 +41,7 @@
         </script>
     </head>
     <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
+        <div class="min-h-screen bg-gray-100 dark:bg-gray-900 flex flex-col">
             @include('layouts.navigation')
 
             <!-- Page Heading -->
@@ -56,7 +57,15 @@
             <main>
                 {{ $slot }}
             </main>
+
+            <footer class="mt-auto border-t border-gray-200 dark:border-gray-700">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+                    <a href="{{ route('cookie.policy') }}" class="text-sm text-gray-500 hover:underline dark:text-gray-400">Cookie Policy</a>
+                </div>
+            </footer>
         </div>
+
+        @include('partials.cookie-banner')
 
         <script>
             window.toggleTheme = function() {
@@ -74,5 +83,6 @@
                 }
             }
         </script>
+        @stack('scripts')
     </body>
 </html>

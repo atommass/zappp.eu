@@ -10,6 +10,9 @@
     <!-- Fonts -->
     <link href="https://fonts.bunny.net/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
 
+    {{-- Load app CSS so shared UI (e.g. cookie banner) matches the rest of the site --}}
+    @vite(['resources/css/app.css'])
+
     <!-- Local font: place Croogla files in public/fonts/ (Croogla-Medium.woff2 / .woff) -->
     <style>
         @font-face{
@@ -18,6 +21,59 @@
             font-weight: 600 800;
             font-style: normal;
             font-display: swap;
+        }
+    </style>
+
+    <style>
+        /* Responsive adjustments for welcome page */
+        .hero-title { font-size: 2.5rem; }
+        .hero-sub { font-size: 1rem; }
+        .hero-cta a { display: inline-block; }
+
+        /* Offset content to avoid overlap with fixed header */
+        .content-offset { padding-top: 5rem; }
+
+        /* Header wrappers spacing */
+        .logo-wrapper { left: 1.25rem; top: 1.25rem; }
+        .controls-wrapper { right: 1.25rem; top: 1.25rem; }
+
+        /* Mobile hamburger */
+        .mobile-controls { display: none; }
+        .welcome-mobile-menu { display: none; }
+
+        @media (max-width: 640px) {
+            .hero-title { font-size: 1.75rem; margin-bottom: .25rem; }
+            .hero-sub { font-size: 0.95rem; padding: 0 1rem; }
+            .hero-cta { flex-direction: column; gap: .5rem; }
+            .hero-cta a { width: 100%; text-align: center; }
+
+            .content-offset { padding-top: 6rem; }
+
+            /* Reduce fixed header spacing on small screens and avoid overlap */
+            .logo-wrapper {
+                left: 50%;
+                top: .5rem;
+                transform: translateX(-50%);
+                padding: .25rem .5rem !important;
+            }
+            /* Must beat the later `.flex { display:flex }` rule in this file */
+            .controls-wrapper { display: none !important; }
+
+            .mobile-controls { display: flex; right: .5rem; top: .5rem; padding: .25rem !important; }
+
+            /* Shrink the logo text on mobile (overrides component CSS) */
+            .logo-wrapper .application-logo-text { font-size: 2.5rem; }
+
+            /* Slightly tighter vertical rhythm on mobile */
+            .mt-6 { margin-top: 1rem; }
+
+            .welcome-mobile-menu {
+                position: fixed;
+                top: 3.5rem;
+                right: .5rem;
+                left: .5rem;
+                z-index: 9999;
+            }
         }
     </style>
 
@@ -417,15 +473,50 @@
         function updateWelcomeIcons(){
             const sun = document.getElementById('welcome-sun');
             const moon = document.getElementById('welcome-moon');
-            if(!sun || !moon) return;
-            if(document.documentElement.classList.contains('dark')){
-                sun.style.display = 'none';
-                moon.style.display = 'inline';
-            } else {
-                sun.style.display = 'inline';
-                moon.style.display = 'none';
+
+            const sunMobile = document.getElementById('welcome-sun-mobile');
+            const moonMobile = document.getElementById('welcome-moon-mobile');
+
+            const isDark = document.documentElement.classList.contains('dark');
+
+            if(sun && moon){
+                sun.style.display = isDark ? 'none' : 'inline';
+                moon.style.display = isDark ? 'inline' : 'none';
+            }
+
+            if(sunMobile && moonMobile){
+                sunMobile.style.display = isDark ? 'none' : 'inline';
+                moonMobile.style.display = isDark ? 'inline' : 'none';
             }
         }
+
+        function toggleWelcomeMenu(){
+            const menu = document.getElementById('welcome-mobile-menu');
+            if(!menu) return;
+            const isOpen = menu.getAttribute('data-open') === '1';
+            menu.style.display = isOpen ? 'none' : 'block';
+            menu.setAttribute('data-open', isOpen ? '0' : '1');
+        }
+
+        function closeWelcomeMenu(){
+            const menu = document.getElementById('welcome-mobile-menu');
+            if(!menu) return;
+            menu.style.display = 'none';
+            menu.setAttribute('data-open', '0');
+        }
+
+        document.addEventListener('click', function (e) {
+            const menu = document.getElementById('welcome-mobile-menu');
+            const button = document.getElementById('welcome-menu-button');
+            if(!menu || !button) return;
+            if(menu.getAttribute('data-open') !== '1') return;
+            if(menu.contains(e.target) || button.contains(e.target)) return;
+            closeWelcomeMenu();
+        });
+
+        document.addEventListener('keydown', function (e) {
+            if(e.key === 'Escape') closeWelcomeMenu();
+        });
 
         document.addEventListener('DOMContentLoaded', updateWelcomeIcons);
     </script>
@@ -495,7 +586,47 @@
 <body class="antialiased">
     <div class="relative flex items-top justify-center min-h-screen bg-gray-100 dark:bg-gray-900 sm:items-center py-4 sm:pt-0">
         @if (Route::has('login'))
-        <div class="fixed top-0 right-0 px-6 py-4 flex items-center space-x-3">
+        <div class="fixed top-5 left-5 px-6 py-4 flex items-center logo-wrapper">
+            <a href="/" class="inline-flex items-center">
+                <x-application-logo class="w-8 h-8" />
+            </a>
+        </div>
+
+        <div class="fixed top-5 right-5 px-6 py-4 items-center mobile-controls">
+            <button id="welcome-menu-button" type="button" onclick="toggleWelcomeMenu()" aria-label="Open menu" class="p-2 rounded-lg border border-gray-200 bg-white text-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-700">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 6h16" />
+                    <path d="M4 12h16" />
+                    <path d="M4 18h16" />
+                </svg>
+            </button>
+        </div>
+
+        <div id="welcome-mobile-menu" class="welcome-mobile-menu" style="display:none" data-open="0">
+            <div class="rounded-lg border border-gray-200 bg-white shadow dark:border-gray-700 dark:bg-gray-800">
+                <div class="p-3 space-y-2">
+                    <button type="button" onclick="toggleWelcomeTheme(); closeWelcomeMenu();" class="w-full text-left px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200">
+                        <span style="display:inline-flex;align-items:center;gap:.5rem;">
+                            <svg id="welcome-sun-mobile" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+                            <svg id="welcome-moon-mobile" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path></svg>
+                            <span>Toggle theme</span>
+                        </span>
+                    </button>
+
+                    @auth
+                        <a href="{{ url('/dashboard') }}" onclick="closeWelcomeMenu()" class="block px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200">Dashboard</a>
+                    @else
+                        <a href="{{ route('login') }}" onclick="closeWelcomeMenu()" class="block px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200">Log in</a>
+
+                        @if (Route::has('register'))
+                            <a href="{{ route('register') }}" onclick="closeWelcomeMenu()" class="block px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200">Register</a>
+                        @endif
+                    @endauth
+                </div>
+            </div>
+        </div>
+
+        <div class="fixed top-5 right-5 px-6 py-4 flex items-center space-x-3 controls-wrapper">
             <button class="theme-toggle" onclick="toggleWelcomeTheme()" aria-label="Toggle theme">
                 <svg id="welcome-sun" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
                 <svg id="welcome-moon" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path></svg>
@@ -512,14 +643,13 @@
         </div>
         @endif
 
-        <div class="max-w-6xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 content-offset">
             
             <!-- Hero -->
             <div class="mt-6 text-center">
-                <h1 style="font-family: 'Croogla Medium', sans-serif; color: #F2B705; font-size: 8rem; margin-bottom:.5rem">zappp.eu</h1>
-                <h2 class="font-extrabold" style="margin-bottom:.5rem; font-size: 2.5rem;">Shorten. Track. Share.</h2>
-                <p class="muted" style="max-width:720px;margin:0 auto 2rem">Create clean, branded links with zappp.eu and see exactly how your audience clicks.</p>
-                <div style="display:flex;justify-content:center;gap:.5rem;margin-bottom:1rem">
+                <h1 class="font-extrabold hero-title" style="margin-bottom:.5rem;">Shorten. Track. Share.</h1>
+                <p class="muted hero-sub" style="max-width:720px;margin:0 auto 2rem">Create clean, branded links with zappp.eu and see exactly how your audience clicks.</p>
+                <div class="hero-cta" style="display:flex;justify-content:center;gap:.5rem;margin-bottom:1rem">
                     <a href="{{ url('/register') }}" class="btn-primary">Create your first short link</a>
                     <a href="{{ url('/dashboard') }}" class="btn-outline">View dashboard</a>
                 </div>
@@ -594,7 +724,7 @@
                 <div class="p-6">
                     <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Feature highlights</h3>
                     <ul class="mt-4 ml-6 text-gray-600 dark:text-gray-400 text-sm list-disc">
-                        <li>Unlimited basic shortening</li>
+                        <li>Basic shortening up to 20 links</li>
                         <li class="mt-2">Link controls such as expiry dates, password protection, and destination editing without changing the short link.</li>
                         <li class="mt-2">QR code generation for any short link to use in print, packaging, and offline campaigns.</li>
                     </ul>
@@ -612,6 +742,11 @@
                         <a href="/support" class="ml-1 underline">
                             Support
                         </a>
+
+                        <span class="ml-2">•</span>
+                        <a href="{{ route('cookie.policy') }}" class="ml-2 underline">
+                            Cookie Policy
+                        </a>
                     </div>
                 </div>
 
@@ -621,6 +756,8 @@
             </div>
         </div>
     </div>
+
+    @include('partials.cookie-banner')
 </body>
 
 </html>

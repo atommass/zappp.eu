@@ -39,14 +39,20 @@
                     window.updateThemeIcons = function() {
                         const sunIcon = document.getElementById('sun-icon');
                         const moonIcon = document.getElementById('moon-icon');
+                        const sunIconMobile = document.getElementById('sun-icon-mobile');
+                        const moonIconMobile = document.getElementById('moon-icon-mobile');
                         if (!sunIcon || !moonIcon) return;
 
                         if (document.documentElement.classList.contains('dark')) {
                             sunIcon.style.display = 'none';
                             moonIcon.style.display = 'inline-block';
+                            if (sunIconMobile) sunIconMobile.style.display = 'none';
+                            if (moonIconMobile) moonIconMobile.style.display = 'inline-block';
                         } else {
                             sunIcon.style.display = 'inline-block';
                             moonIcon.style.display = 'none';
+                            if (sunIconMobile) sunIconMobile.style.display = 'inline-block';
+                            if (moonIconMobile) moonIconMobile.style.display = 'none';
                         }
                     }
 
@@ -118,6 +124,13 @@
             </div>
 
             <div class="mt-3 space-y-1">
+                <div class="px-4">
+                    <button onclick="window.toggleTheme()" class="w-full flex items-center gap-2 px-3 py-2 text-left text-gray-600 dark:text-gray-300 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700">
+                        <svg id="sun-icon-mobile" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+                        <svg id="moon-icon-mobile" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path></svg>
+                        <span>Toggle theme</span>
+                    </button>
+                </div>
                 <x-responsive-nav-link :href="route('profile.edit')">
                     {{ __('Profile') }}
                 </x-responsive-nav-link>
