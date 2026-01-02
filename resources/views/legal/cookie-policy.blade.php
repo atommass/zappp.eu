@@ -10,7 +10,7 @@
 
         <div class="space-y-4 text-sm text-gray-700 dark:text-gray-300">
             <p>
-                This Cookie Policy explains what cookies are used on zappp.eu, why we use them, and how you can control them.
+                This Cookie Policy explains what cookies are used on zippp.eu, why we use them, and how you can control them.
             </p>
 
             <h2 class="text-base font-semibold text-gray-900 dark:text-gray-100">Cookies we use</h2>

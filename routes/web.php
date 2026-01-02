@@ -12,8 +12,21 @@ Route::get('/', function () {
 
 Route::view('/cookie-policy', 'legal.cookie-policy')->name('cookie.policy');
 
+Route::get('/email-logo', function () {
+    $path = public_path('zippp.eu.png');
 
-Route::middleware('auth')->group(function () {
+    if (!file_exists($path)) {
+        abort(404);
+    }
+
+    return response()->file($path, [
+        'Content-Type' => 'image/png',
+        'Cache-Control' => 'public, max-age=86400',
+    ]);
+})->name('email.logo');
+
+
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [LinkController::class, 'index'])->name('dashboard');
     Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics');
     Route::post('/links/store', [LinkController::class, 'store'])->name('links.store');
@@ -22,7 +35,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/links/{link}/update', [LinkController::class, 'update'])->name('links.update');
 });
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');

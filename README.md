@@ -1,6 +1,6 @@
-## zappp — URL shortener
+## zippp — URL shortener
 
-zappp is a lightweight Laravel-based URL shortener built for small teams and personal use. It supports:
+zippp is a lightweight Laravel-based URL shortener built for small teams and personal use. It supports:
 
 - Per-user link management with pagination and redirect counting.
 - Optional expiration per link (default 90 days) and a "never expire" option.

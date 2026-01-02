@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>zappp.eu</title>
+    <title>zippp.eu</title>
 
     <!-- Fonts -->
     <link href="https://fonts.bunny.net/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
@@ -648,14 +648,14 @@
             <!-- Hero -->
             <div class="mt-6 text-center">
                 <h1 class="font-extrabold hero-title" style="margin-bottom:.5rem;">Shorten. Track. Share.</h1>
-                <p class="muted hero-sub" style="max-width:720px;margin:0 auto 2rem">Create clean, branded links with zappp.eu and see exactly how your audience clicks.</p>
+                <p class="muted hero-sub" style="max-width:720px;margin:0 auto 2rem">Create clean, branded links with zippp.eu and see exactly how your audience clicks.</p>
                 <div class="hero-cta" style="display:flex;justify-content:center;gap:.5rem;margin-bottom:1rem">
                     <a href="{{ url('/register') }}" class="btn-primary">Create your first short link</a>
                     <a href="{{ url('/dashboard') }}" class="btn-outline">View dashboard</a>
                 </div>
             </div>
 
-            <div class="mt-8 bg-white dark:bg-gray-800 overflow-hidden shadow sm:rounded-lg">
+            <div class="mt-8 bg-white dark:bg-gray-800 overflow-hidden shadow sm:rounded-lg rounded-lg">
                 <div class="grid grid-cols-1 md:grid-cols-2">
                     <div class="p-6">
                         <div class="flex items-center">
@@ -720,7 +720,7 @@
             </div>
 
             <!-- Feature highlights -->
-            <div class="mt-8 bg-white dark:bg-gray-800 overflow-hidden shadow sm:rounded-lg">
+            <div class="mt-8 bg-white dark:bg-gray-800 overflow-hidden shadow sm:rounded-lg rounded-lg">
                 <div class="p-6">
                     <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Feature highlights</h3>
                     <ul class="mt-4 ml-6 text-gray-600 dark:text-gray-400 text-sm list-disc">
@@ -751,7 +751,7 @@
                 </div>
 
                 <div class="ml-4 text-center text-sm text-gray-500 sm:text-right sm:ml-0">
-                    ZAPPP.EU &copy; {{ date('Y') }}
+                    ZIPPP.EU &copy; {{ date('Y') }}
                 </div>
             </div>
         </div>

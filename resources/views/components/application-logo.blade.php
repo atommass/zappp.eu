@@ -18,4 +18,4 @@
 	}
 </style>
 
-<span {{ $attributes->merge(['class' => 'application-logo-text']) }} aria-label="zappp.eu">zappp.eu</span>
+<span {{ $attributes->merge(['class' => 'application-logo-text']) }} aria-label="zippp.eu">zippp.eu</span>
