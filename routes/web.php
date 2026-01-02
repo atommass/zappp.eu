@@ -29,6 +29,10 @@ Route::get('/email-logo', function () {
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [LinkController::class, 'index'])->name('dashboard');
     Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics');
+
+    Route::get('/qr/{code}', [\App\Http\Controllers\QrCodeController::class, 'show'])->name('qr.show');
+    Route::get('/qr/{code}/download', [\App\Http\Controllers\QrCodeController::class, 'download'])->name('qr.download');
+
     Route::post('/links/store', [LinkController::class, 'store'])->name('links.store');
     Route::delete('/links/{link}/destroy', [LinkController::class, 'destroy'])->name('links.destroy');
     Route::get('/links/{link}/edit', [LinkController::class, 'edit'])->name('links.edit');

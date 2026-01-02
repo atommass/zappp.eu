@@ -17,9 +17,16 @@
                             @foreach($links as $link)
                                 <li class="mb-2 flex items-center justify-between">
                                     <div>
-                                        <a href="{{ $link->slug }}" target="_blank" class="text-blue-500 hover:underline">
-                                            {{ $link->slug }}
-                                        </a>
+                                        <div class="flex items-center space-x-2">
+                                            <a href="{{ route('qr.show', $link->slug) }}" class="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100" aria-label="View QR code">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
+                                                    <path fill-rule="evenodd" d="M15.75 2.25a.75.75 0 0 0 0 1.5h3.19L12 10.69a.75.75 0 1 0 1.06 1.06l6.94-6.94v3.19a.75.75 0 0 0 1.5 0V3a.75.75 0 0 0-.75-.75h-5Zm-13.5 7.5A2.25 2.25 0 0 1 4.5 7.5h6a.75.75 0 0 1 0 1.5h-6a.75.75 0 0 0-.75.75v9a.75.75 0 0 0 .75.75h9a.75.75 0 0 0 .75-.75v-6a.75.75 0 0 1 1.5 0v6A2.25 2.25 0 0 1 13.5 21h-9a2.25 2.25 0 0 1-2.25-2.25v-9Z" clip-rule="evenodd" />
+                                                </svg>
+                                            </a>
+                                            <a href="{{ url($link->slug) }}" target="_blank" class="text-blue-500 hover:underline">
+                                                {{ $link->slug }}
+                                            </a>
+                                        </div>
                                         <p class="text-sm text-gray-500">Destination: {{ $link->target }}</p>
                                     </div>
                                     <div class="ml-2 flex items-center space-x-2">
