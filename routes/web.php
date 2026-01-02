@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\LinkController;
+use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RedirectController;
@@ -12,6 +13,7 @@ Route::get('/', function () {
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [LinkController::class, 'index'])->name('dashboard');
+    Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics');
     Route::post('/links/store', [LinkController::class, 'store'])->name('links.store');
     Route::delete('/links/{link}/destroy', [LinkController::class, 'destroy'])->name('links.destroy');
     Route::get('/links/{link}/edit', [LinkController::class, 'edit'])->name('links.edit');

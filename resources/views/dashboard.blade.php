@@ -20,17 +20,39 @@
                                         <a href="{{ $link->slug }}" target="_blank" class="text-blue-500 hover:underline">
                                             {{ $link->slug }}
                                         </a>
-                                        <span class="text-sm font-normal text-gray-500">
-                                            ({{ $link->redirects_count }} {{ $link->redirects_count === 1 ? 'redirect' : 'redirects' }})
-                                        </span>
-                                        <p class="text-sm text-gray-500">Target: {{ $link->target }}</p>
-                                        @if($link->expires_at)
-                                            <p class="text-sm text-gray-500">Expires: {{ $link->expires_at->diffForHumans() }} @if($link->isExpired()) (expired) @endif</p>
-                                        @else
-                                            <p class="text-sm text-gray-500">Expires: Never</p>
-                                        @endif
+                                        <p class="text-sm text-gray-500">Destination: {{ $link->target }}</p>
                                     </div>
                                     <div class="ml-2 flex items-center space-x-2">
+                                        <div class="text-sm text-gray-500 mr-2">
+                                            @if($link->expires_at)
+                                                @if($link->isExpired())
+                                                    <span class="text-red-500">Expired ({{ $link->expires_at->diffForHumans() }})</span>
+                                                @else
+                                                    @php
+                                                        $now = now();
+                                                        $remainingSeconds = $now->diffInSeconds($link->expires_at, false);
+                                                        $remainingSeconds = $remainingSeconds > 0 ? $remainingSeconds : 0;
+
+                                                        // Show hour/min countdown when the link expires within the next 24 hours.
+                                                        if ($remainingSeconds > 0 && $remainingSeconds < 86400) {
+                                                            $hours = intdiv($remainingSeconds, 3600);
+                                                            $minutes = intdiv($remainingSeconds % 3600, 60);
+                                                            $countdown = $hours.'h '.$minutes.'m';
+                                                        } else {
+                                                            $countdown = null;
+                                                        }
+                                                    @endphp
+                                                    @if($countdown)
+                                                        <span>Expires in {{ $countdown }}</span>
+                                                    @else
+                                                        <span>Expires {{ $link->expires_at->diffForHumans() }}</span>
+                                                    @endif
+                                                @endif
+                                            @else
+                                                <span>Does not expire</span>
+                                            @endif
+                                        </div>
+
                                         <span class="relative inline-flex items-center text-sm text-gray-600 dark:text-gray-300" aria-hidden="false">
                                             <span class="group inline-flex items-center">
                                                 @if($link->isPasswordProtected())

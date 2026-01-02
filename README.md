@@ -1,66 +1,133 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+## zappp — URL shortener
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+zappp is a lightweight Laravel-based URL shortener built for small teams and personal use. It supports:
 
-## About Laravel
+- Per-user link management with pagination and redirect counting.
+- Optional expiration per link (default 90 days) and a "never expire" option.
+- Optional per-link password protection (users must enter the password to follow protected links).
+- Editing and deleting links from a dashboard.
+- A scheduled pruning command that deletes expired links automatically.
+- Per-user link limit enforced server-side (configured in `LinkController`).
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+This repository contains the full application source built on Laravel with a Vite/Alpine/Flatpickr front-end for a smooth UX.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Quick feature mapping
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- Links are stored in the `links` table (see migrations in [database/migrations](database/migrations)).
+- Columns of interest: `target`, `slug`, `expires_at`, `password_hash`.
+- Passwords are stored hashed in `password_hash`. When set, visiting `/{slug}` requires the password first.
+- A scheduled Artisan command `links:prune-expired` removes expired links; it's registered in [app/Console/Kernel.php](app/Console/Kernel.php).
 
-## Learning Laravel
+## Local setup (development)
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+Follow these steps to run the project locally on a machine with PHP, Composer and Node.js installed (tested on Windows, macOS, Linux):
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+1. Clone the repository and change into the project directory:
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+```bash
+git clone <repo-url> zappp
+cd zappp
+```
 
-## Laravel Sponsors
+2. Install PHP dependencies with Composer:
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+```bash
+composer install
+```
 
-### Premium Partners
+3. Copy and configure your environment file:
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+```bash
+cp .env.example .env
+# Edit .env and set DB_CONNECTION, DB_DATABASE, DB_USERNAME, DB_PASSWORD, and APP_URL
+```
+
+4. Generate an application key:
+
+```bash
+php artisan key:generate
+```
+
+5. Create a database and run migrations:
+
+```bash
+php artisan migrate
+```
+
+6. (Optional) Seed test data:
+
+```bash
+php artisan db:seed
+```
+
+7. Install front-end dependencies and build assets (development):
+
+```bash
+npm install
+npm run dev
+```
+
+If you prefer an optimized production build:
+
+```bash
+npm run build
+```
+
+8. Serve the application locally:
+
+```bash
+php artisan serve
+# then open the printed URL (usually http://127.0.0.1:8000)
+```
+
+9. (Optional) Enable the scheduler for automatic pruning in production:
+
+On Linux / macOS, add the following cron entry (runs Laravel scheduler every minute):
+
+```cron
+* * * * * cd /path/to/project && php artisan schedule:run >> /dev/null 2>&1
+```
+
+On Windows use Task Scheduler to run `php artisan schedule:run` every minute or as required.
+
+## Using the App
+
+- Register or log in to access the dashboard at `/dashboard`.
+- Create links by providing a target URL; you may set a custom slug or let the app generate one.
+- Expiration:
+	- If you leave the expiration blank, the link defaults to 90 days from creation.
+	- Check "Never expire" to keep the link active indefinitely.
+- Password protection:
+	- When enabled, the creator sets a password. Visiting the short URL will require entering that password before redirecting.
+- Edit and delete links from the dashboard. Deleting asks for confirmation.
+
+## Configuration and Customization
+
+- Per-user link limit: enforced in `app/Http/Controllers/LinkController.php` by the `$max` variable near the start of the `store()` method. Change it to adjust the allowed number of links per user.
+- Expiry default: controlled in `LinkController` (uses `now()->addDays(90)`).
+- Scheduled pruning: implemented as the Artisan command `links:prune-expired` in [app/Console/Commands/PruneExpiredLinks.php](app/Console/Commands/PruneExpiredLinks.php).
+
+## Security notes
+
+- Passwords are hashed using Laravel's `Hash` helper; raw passwords are never stored.
+- The unlock flow requires the correct password before redirecting; it does not store the password in session by default (each visit requires the password).
+- When deploying, ensure you use HTTPS to protect passwords and link targets in transit.
+
+## Development notes
+
+- Frontend: uses Alpine.js for small interactive behaviors and Flatpickr for the date/time picker (see `resources/js/app.js`).
+- Styles: Tailwind CSS configured in `tailwind.config.js`.
+- Tests: The project currently does not include an extensive test suite — add PHPUnit or Pest tests as needed.
+
+## Troubleshooting
+
+- If the date-time picker doesn't appear, ensure you've run `npm install` and `npm run dev` and that your browser loads the compiled assets.
+- If redirects to short slugs return 404, verify migrations ran and `expires_at` values aren't expired.
 
 ## Contributing
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+If you want to contribute features or fixes, fork the repository, create a branch per change, and open a pull request. Please include tests for non-trivial features.
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is provided under the MIT license.
