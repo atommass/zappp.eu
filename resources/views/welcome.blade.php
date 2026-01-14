@@ -581,6 +581,19 @@
             font-family: 'Nunito', sans-serif;
         }
     </style>
+
+    <!-- Google Analytics 4 -->
+    @php($gaId = config('services.google.analytics_id'))
+    @php($hasAnalyticsConsent = request()->cookie('zappp_cookie_consent') === 'analytics')
+    @if($gaId && $hasAnalyticsConsent)
+        <script async src="https://www.googletagmanager.com/gtag/js?id={{ $gaId }}"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);} 
+            gtag('js', new Date());
+            gtag('config', '{{ $gaId }}', { anonymize_ip: true });
+        </script>
+    @endif
 </head>
 
 <body class="antialiased">
